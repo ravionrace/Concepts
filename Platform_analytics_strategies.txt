@@ -1,0 +1,313 @@
+# ServiceNow Platform Analytics Migration Strategy
+
+## Executive Summary
+
+This document outlines a comprehensive strategy for migrating from Performance Analytics to Platform Analytics in ServiceNow. ServiceNow announced in February 2024 its plan to phase out the traditional ServiceNow Core UI reports and dashboards by its Zurich release in 2025, making this migration mandatory for all organizations.
+
+**Timeline Critical**: With the Zurich release everything will be migrated (no way of opting out, Platform Analytics will be the only way to go)
+
+## Project Overview
+
+### Key Drivers
+- **Mandatory Migration**: Platform Analytics becomes the default solution for organizations implementing ServiceNow in the Xanadu release
+- **Enhanced Capabilities**: Modern interface with advanced data visualization and analysis tools
+- **Performance Improvements**: Platform Analytics saves users three-quarters of the time required to access analytics
+
+### Migration Scope
+- Legacy dashboards from Core UI
+- Performance Analytics widgets  
+- Reports and filters
+- Custom visualizations and configurations
+
+## Migration Strategy
+
+### Phase 1: Pre-Migration Assessment & Planning (Weeks 1-4)
+
+#### 1.1 Inventory and Assessment
+**Deliverables**: Complete inventory of current analytics assets
+
+**Activities**:
+- **Dashboard Audit**: Navigate to `pa_dashboards.list` to catalog all existing dashboards
+- **Report Analysis**: Document all reports, their usage frequency, and business criticality
+- **User Access Review**: Map user roles, permissions, and access patterns
+- **Performance Baseline**: Document current dashboard load times and performance metrics
+- **Dependency Mapping**: Identify dashboards with embedded charts in forms, mobile usage, and Service Portal integrations
+
+**Timeline**: 2 weeks
+
+#### 1.2 Environment Preparation
+**Activities**:
+- Set up dedicated test environment (Sub-Production)
+- Configure Platform Analytics Migration Center access
+- Remove inactive dashboards and reports to ensure a smooth migration process
+- Backup current configurations and custom code
+
+**Timeline**: 1 week
+
+#### 1.3 Risk Assessment
+**High-Risk Items to Identify**:
+- Dashboards with complex custom logic
+- Heavy usage dashboards with performance concerns
+- Integration points with external systems
+- Custom widgets and advanced configurations
+
+**Timeline**: 1 week
+
+### Phase 2: Pilot Migration (Weeks 5-8)
+
+#### 2.1 Pilot Selection Strategy
+If you want to test with some teams the migration and the move to Platform Analytics then you can do a phased migration of just some dashboards
+
+**Pilot Criteria**:
+- Select 5-10 representative dashboards
+- Include mix of simple and complex visualizations
+- Choose dashboards from different business units
+- Include both high and low usage dashboards
+
+**Timeline**: 1 week
+
+#### 2.2 Pilot Execution
+**Process**:
+1. Navigate to Performance Analytics > Migration Center
+2. Use "Start Moving" for selected dashboards
+3. The system automatically identifies content compatible with the migration and performs the procedure
+4. Review items in "Compatibility Mode"
+
+**Timeline**: 1 week
+
+#### 2.3 Pilot Validation & Testing
+**Validation Framework**:
+- **Functional Testing**: Verify all visualizations render correctly
+- **Data Accuracy**: Compare data between old and new dashboards
+- **Performance Testing**: Measure load times and responsiveness
+- **User Acceptance**: Gather feedback from pilot users
+- **Access Control**: Verify role-based permissions work correctly
+
+**Timeline**: 2 weeks
+
+### Phase 3: Issue Resolution & Refinement (Weeks 9-12)
+
+#### 3.1 Known Migration Tool Issues
+
+Based on community feedback, the following issues have been identified:
+
+**Critical Issues**:
+- Existing breakdown source field is not being followed. The way these breakdown sources are being migrated the new filters are not showing the same elements as the pre-migration breakdowns
+- Column visualizations that have been migrated from an existing PA Widget. The indicator list order is not being kept and the order needs to be reset
+- Single score format values are not being migrating with the same specs as those that are contained within the indicator
+
+**Functional Gaps**:
+- Chart type reports on dashboards that display data tables after the chart lose this functionality in migrated versions
+- Knowledge articles displayed as iframes become difficult to read in migrated dashboards, formatted as small squares with scroll bars
+- Cascading Filters were previously neatly packaged and now these are separated
+
+#### 3.2 Issue Resolution Strategy
+**Approach**:
+1. **ServiceNow Support Cases**: Please raise Support cases if you see issues and we will be able to verify directly with the internal team
+2. **Custom Development**: Plan for Java Spring Boot APIs to handle data gaps if needed
+3. **Workaround Documentation**: Document alternative approaches for unsupported features
+4. **User Training**: Prepare training for new UI patterns and workflows
+
+**Timeline**: 4 weeks
+
+### Phase 4: Bulk Migration (Weeks 13-16)
+
+#### 4.1 Pre-Migration Cleanup
+**Activities**:
+- Final removal of unused/inactive dashboards
+- Consolidate duplicate reports
+- Update documentation and user guides
+- Communication to end users about upcoming changes
+
+**Timeline**: 1 week
+
+#### 4.2 Bulk Migration Execution
+**Process**:
+1. Schedule maintenance window
+2. Execute bulk migration through Migration Center
+3. The migration is the one that migrates all content
+4. Monitor migration progress and log any failures
+5. After bulk migration, all the URL that were going to Core UI artifacts will automatically redirect the users to the migrated version
+
+**Timeline**: 1 week
+
+#### 4.3 Post-Migration Validation
+**Comprehensive Testing**:
+- **Data Integrity**: Automated scripts to compare data accuracy
+- **Performance Benchmarking**: Compare against baseline metrics
+- **User Access Testing**: Validate all role-based permissions
+- **Integration Testing**: Verify embedded charts and mobile functionality
+- **Load Testing**: Test with peak user volumes
+
+**Timeline**: 2 weeks
+
+### Phase 5: Optimization & User Adoption (Weeks 17-20)
+
+#### 5.1 Performance Optimization
+**Activities**:
+- Review dashboard caching settings (available only in Platform Analytics)
+- Optimize slow-performing visualizations
+- Clean up redundant indicator sources
+- Implement best practices for data source selection
+
+#### 5.2 User Training & Support
+**Training Program**:
+- Create new user guides reflecting Platform Analytics interface
+- Conduct training sessions for power users
+- Set up help desk support for migration-related questions
+- Document differences between old and new systems
+
+#### 5.3 Ongoing Monitoring
+**Monitoring Strategy**:
+- Track dashboard usage statistics
+- Monitor performance metrics
+- Collect user feedback continuously
+- Plan for iterative improvements
+
+**Timeline**: 4 weeks
+
+## Post-Migration Validation Framework
+
+### Data Validation Steps
+
+#### 1. Automated Data Comparison
+```java
+// Example validation approach using Spring Boot
+@Service
+public class MigrationValidationService {
+    
+    public ValidationResult validateDashboardData(String dashboardId) {
+        // Compare data sources between old and new dashboards
+        // Validate aggregation calculations
+        // Check date range filters
+        // Verify breakdown dimensions
+        return validationResult;
+    }
+}
+```
+
+#### 2. Key Validation Points
+- **Data Accuracy**: Row counts, sum totals, averages match between old and new
+- **Date Filtering**: Ensure date range selectors produce identical results
+- **Breakdown Sources**: Verify dimension filtering works correctly
+- **Aggregations**: Confirm sum, count, average calculations are accurate
+- **Drill-down Functionality**: Test navigation between dashboard levels
+
+#### 3. Performance Validation
+- **Load Time Comparison**: Document before/after load times
+- **Concurrent User Testing**: Validate performance under load
+- **Mobile Performance**: Test dashboard rendering on mobile devices
+- **Memory Usage**: Monitor browser memory consumption
+
+#### 4. Functional Validation Checklist
+
+**Dashboard Level**:
+- [ ] All widgets display correctly
+- [ ] Dashboard filters function properly
+- [ ] Date range selectors work as expected
+- [ ] Interactive elements respond correctly
+- [ ] Print/export functionality works
+
+**Widget Level**:
+- [ ] Data visualization types render correctly
+- [ ] Color schemes and formatting preserved
+- [ ] Tooltips and hover effects work
+- [ ] Click-through actions function properly
+- [ ] Data labels and legends display correctly
+
+**User Access**:
+- [ ] Role-based permissions enforced
+- [ ] Group-level restrictions maintained
+- [ ] Personal dashboard access preserved
+- [ ] Sharing settings migrated correctly
+
+## Risk Mitigation & Contingency Plans
+
+### High-Risk Scenarios
+
+#### 1. Migration Tool Failures
+**Risk**: Critical functionality not migrated correctly
+**Mitigation**: 
+- Maintain parallel systems during transition period
+- Develop custom React components for missing functionality
+- Contact NOW Support for rollback options if needed
+
+#### 2. Performance Degradation
+**Risk**: Migrated dashboards perform worse than original
+**Mitigation**:
+- Pre-migration performance baseline establishment
+- Dashboard caching implementation
+- Query optimization and indicator source consolidation
+
+#### 3. User Adoption Challenges
+**Risk**: Users struggle with new interface
+**Mitigation**:
+- Comprehensive training program
+- Side-by-side interface comparisons
+- Gradual transition period with both systems available
+
+### Rollback Strategy
+
+It is my understanding that there is a way to rollback the migration but you need to contact NOW Support in order to do so
+
+**Rollback Conditions**:
+- Critical functionality completely broken
+- Severe performance degradation
+- Data integrity issues that cannot be resolved
+
+**Rollback Process**:
+1. Immediate escalation to ServiceNow Support
+2. Document specific issues preventing production use
+3. Coordinate rollback timing with business stakeholders
+4. Plan for re-migration approach addressing identified issues
+
+## Timeline Summary
+
+| Phase | Duration | Key Deliverables |
+|-------|----------|------------------|
+| Pre-Migration Assessment | 4 weeks | Inventory, risk assessment, environment setup |
+| Pilot Migration | 4 weeks | Pilot execution, validation framework, user feedback |
+| Issue Resolution | 4 weeks | Bug fixes, workarounds, support cases |
+| Bulk Migration | 4 weeks | Full migration, comprehensive validation |
+| Optimization & Adoption | 4 weeks | Performance tuning, training, monitoring |
+| **Total Project Duration** | **20 weeks** | **Fully migrated Platform Analytics implementation** |
+
+## Success Criteria
+
+### Technical Success Metrics
+- 100% of critical dashboards migrated successfully
+- No more than 10% performance degradation on any dashboard
+- All data validation tests pass with 99.9% accuracy
+- Zero critical functionality gaps
+
+### Business Success Metrics
+- User adoption rate >90% within 4 weeks post-migration
+- Reduction in support tickets related to analytics within 8 weeks
+- Improved user satisfaction scores for analytics experience
+- Maintained or improved dashboard usage statistics
+
+## Recommendations
+
+### Immediate Actions
+1. **Start Planning Now**: Begin inventory and assessment immediately
+2. **Environment Setup**: Establish dedicated test environment for migration testing
+3. **Stakeholder Engagement**: Involve business users early in pilot testing
+4. **Support Relationship**: Establish direct communication channel with ServiceNow Support
+
+### Best Practices
+1. **Phased Approach**: Use phased migration for testing before bulk migration
+2. **Comprehensive Testing**: Validate both functionality and performance thoroughly  
+3. **User Communication**: Keep users informed throughout the migration process
+4. **Documentation**: Maintain detailed documentation of all changes and workarounds
+
+### Long-term Considerations
+1. **Continuous Monitoring**: Implement ongoing performance monitoring
+2. **Regular Updates**: Stay current with Platform Analytics feature releases
+3. **User Feedback**: Establish continuous feedback loop for improvements
+4. **Optimization**: Plan for regular optimization reviews and updates
+
+---
+
+**Document Version**: 1.0  
+**Last Updated**: January 2025  
+**Next Review**: Post-Migration (Week 21)
